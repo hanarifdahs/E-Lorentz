@@ -38,13 +38,13 @@ class Quiz:
     def nextQuest(self):
         print("iterasi ke", self.iter)
         self.jawaban.append(self.entryColumn.get())
-        if self.iter == len(self.soal):
+        if self.iter == len(self.soal)-1:
             print("selesai")
             selesai = Label(
                 self.root, text="Anda Telah Menyelesaikan Praktikum Gaya Lorentz",
                 width=60, font=("times", 16, "bold"))
             selesai.place(x=50, y=100)
-
+            self.entryColumn.delete(0, END)
         else:
             print("masuk 1")
             self.iter += 1
@@ -55,8 +55,8 @@ class Quiz:
                               self.soal[self.iter])
             print("masuk 4")
             self.entryColumn.delete(0, END)
-            print("panjang soal", len(self.soal))
-            print("panjang jawaban", len(self.jawaban))
+        print("panjang soal", len(self.soal))
+        print("panjang jawaban", len(self.jawaban))
 
     def getSoal(self):
         db = pymysql.connect(host="localhost", user="root", password="",
