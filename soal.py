@@ -12,7 +12,7 @@ class Quiz:
         self.entryColumn = StringVar()
         self.btnNext = StringVar()
         self.btnQuit = StringVar()
-        self.itersoal = StringVar()
+        self.itersoal = []
         self.iter = 0
         self.questionNumber = 1
         self.soal = []
@@ -53,13 +53,13 @@ class Quiz:
             self.entryColumn.destroy()
             self.btnNext.destroy()
             self.btnQuit.place(x=325, y=380)
+            self.publishjawaban()
         else:
             self.iter += 1
             self.questionNumber += 1
             self.question.set(str(self.questionNumber)+". " +
                               self.soal[self.iter])
             self.entryColumn.delete(0, END)
-        self.publishjawaban()
 
     def getSoal(self):
         db = pymysql.connect(host="localhost", user="root", password="",
@@ -78,24 +78,22 @@ class Quiz:
         broker = "localhost"
         port = 1883
         print("Creating New Instance")
-        client = mqtt.Client("Soal")
-        client.on_publish = on_publish
-        print("Connecting to Broker")
-        client.connect(broker, port=port)
-
-        client.loop_start()
-        print("Send Question")
-        time.sleep(1)
-        self.iter += 1
-
-        mdata = {"iter": self.itersoal,
-                 "siswa": "1",
-                 "jawaban": self.jawaban,
-                 "alat": "coba"}
-        print(mdata)
-        mdata = json.dumps(mdata)
-        client.publish("fisika/jawaban", mdata)
-        client.loop_stop()
+        for i in range(len(self.miter)):
+            client = mqtt.Client("Soal")
+            client.on_publish = on_publish
+            print("Connecting to Broker")
+            client.connect(broker, port=port)
+            client.loop_start()
+            print("Send Question")
+            time.sleep(1)
+            mdata = {"iter": self.miter[i],
+                     "siswa": "1",
+                     "jawaban": self.jawaban[i],
+                     "alat": "coba"}
+            print(mdata)
+            mdata = json.dumps(mdata)
+            client.publish("fisika/jawaban", mdata)
+            client.loop_stop()
 
 
 root = Tk()
