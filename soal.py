@@ -1,5 +1,8 @@
+import json
+import time
 from tkinter import *
 import pymysql
+import paho.mqtt.client as mqtt
 
 
 class Quiz:
@@ -9,11 +12,13 @@ class Quiz:
         self.entryColumn = StringVar()
         self.btnNext = StringVar()
         self.btnQuit = StringVar()
+        self.itersoal = StringVar()
         self.iter = 0
         self.questionNumber = 1
         self.soal = []
         self.miter = []
         self.jawaban = []
+        self.mdatas = []
         self.getSoal()
         self.initUI()
 
@@ -33,12 +38,11 @@ class Quiz:
         self.btnNext = Button(self.root, text="Next", command=self.nextQuest,
                               width=10, bg="green", fg="white", font=("times", 16, "bold"))
         self.btnNext.place(x=200, y=380)
-        self.btnQuit = Button(root, text="Quit", command=root.destroy,
+        self.btnQuit = Button(self.root, text="Quit", command=self.root.destroy,
                               width=10, bg="red", fg="white", font=("times", 16, "bold"))
         self.btnQuit.place(x=400, y=380)
 
     def nextQuest(self):
-        print("iterasi ke", self.iter)
         self.jawaban.append(self.entryColumn.get())
         if self.iter == len(self.soal)-1:
             print("selesai")
@@ -50,17 +54,12 @@ class Quiz:
             self.btnNext.destroy()
             self.btnQuit.place(x=325, y=380)
         else:
-            print("masuk 1")
             self.iter += 1
-            print("masuk 2")
             self.questionNumber += 1
-            print("masuk 3")
             self.question.set(str(self.questionNumber)+". " +
                               self.soal[self.iter])
-            print("masuk 4")
             self.entryColumn.delete(0, END)
-        print("panjang soal", len(self.soal))
-        print("panjang jawaban", len(self.jawaban))
+        self.publishjawaban()
 
     def getSoal(self):
         db = pymysql.connect(host="localhost", user="root", password="",
@@ -73,8 +72,30 @@ class Quiz:
         cur.execute(query)
         self.miter = [i[0] for i in cur.fetchall()]
 
-    def publishjawban(self):
-        pass
+    def publishjawaban(self):
+        def on_publish(client, userdata, result):
+            print("Data Published \n")
+        broker = "localhost"
+        port = 1883
+        print("Creating New Instance")
+        client = mqtt.Client("Soal")
+        client.on_publish = on_publish
+        print("Connecting to Broker")
+        client.connect(broker, port=port)
+
+        client.loop_start()
+        print("Send Question")
+        time.sleep(1)
+        self.iter += 1
+
+        mdata = {"iter": self.itersoal,
+                 "siswa": "1",
+                 "jawaban": self.jawaban,
+                 "alat": "coba"}
+        print(mdata)
+        mdata = json.dumps(mdata)
+        client.publish("fisika/jawaban", mdata)
+        client.loop_stop()
 
 
 root = Tk()
