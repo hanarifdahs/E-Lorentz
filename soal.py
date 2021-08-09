@@ -7,6 +7,8 @@ class Quiz:
         self.root = root
         self.question = StringVar()
         self.entryColumn = StringVar()
+        self.btnNext = StringVar()
+        self.btnQuit = StringVar()
         self.iter = 0
         self.questionNumber = 1
         self.soal = []
@@ -28,12 +30,12 @@ class Quiz:
                                  font=("times", 16, "bold"))
         self.entryColumn.place(x=70, y=200)
 
-        btnNext = Button(self.root, text="Next", command=self.nextQuest,
-                         width=10, bg="green", fg="white", font=("times", 16, "bold"))
-        btnNext.place(x=200, y=380)
-        btnQuit = Button(root, text="Quit", command=root.destroy,
-                         width=10, bg="red", fg="white", font=("times", 16, "bold"))
-        btnQuit.place(x=400, y=380)
+        self.btnNext = Button(self.root, text="Next", command=self.nextQuest,
+                              width=10, bg="green", fg="white", font=("times", 16, "bold"))
+        self.btnNext.place(x=200, y=380)
+        self.btnQuit = Button(root, text="Quit", command=root.destroy,
+                              width=10, bg="red", fg="white", font=("times", 16, "bold"))
+        self.btnQuit.place(x=400, y=380)
 
     def nextQuest(self):
         print("iterasi ke", self.iter)
@@ -44,7 +46,9 @@ class Quiz:
                 self.root, text="Anda Telah Menyelesaikan Praktikum Gaya Lorentz",
                 width=60, font=("times", 16, "bold"))
             selesai.place(x=50, y=100)
-            self.entryColumn.delete(0, END)
+            self.entryColumn.destroy()
+            self.btnNext.destroy()
+            self.btnQuit.place(x=325, y=380)
         else:
             print("masuk 1")
             self.iter += 1
