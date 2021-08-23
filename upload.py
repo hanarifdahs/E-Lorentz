@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+import pymysql
 import paho.mqtt.client as mqtt
 import time
 import os
@@ -34,41 +35,55 @@ class Uploadquestion:
         listnilaiBtn.place(x=475, y=380)
 
     def btnSubmit(self):
-
-        def on_publish(client, userdata, result):
-            print("Data Published \n")
-
-        broker_address = "localhost"
-        port = 1883
-        print("Creating New Instance")
-        client = mqtt.Client("NIP-123")
-        client.on_publish = on_publish
-        print("Connecting to Broker")
-        client.connect(broker_address, port=port)
-
-        client.loop_start()
-        print("Publish Question")
-        time.sleep(1)
-        self.questionIter += 1
-        mdata = {"iter": self.questionIter,
-                 "soal": self.entryColumn.get()}
-        print(mdata)
-        mdata = json.dumps(mdata)
-        client.publish("fisika/soal", mdata)
-        print(self.entryColumn.get())
-        client.loop_stop()
+        db = pymysql.connect(host="localhost", user="root",
+                             passwd="", db="lorentz")
+        cur = db.cursor()
+        query = """INSERT INTO soal (soal) VALUES(%s)"""
+        record = (self.entryColumn.get())
+        cur.execute(query, record)
+        db.commit()
         self.questionNumber += 1
+        self.question.set(str(self.questionNumber))
         self.entryColumn.delete(0, END)
+
+        # def on_publish(client, userdata, result):
+        #     print("Data Published \n")
+
+        # # broker_address = "localhost"
+        # broker_address = "broker.hivemq.com"
+        # port = 1883
+        # print("Creating New Instance")
+        # client = mqtt.Client("NIP-123")
+        # client.on_publish = on_publish
+        # print("Connecting to Broker")
+        # client.connect(broker_address, port=port)
+
+        # client.loop_start()
+        # print("Publish Question")
+        # time.sleep(1)
+        # self.questionIter += 1
+        # mdata = {"iter": self.questionIter,
+        #          "soal": self.entryColumn.get()}
+        # print(mdata)
+        # mdata = json.dumps(mdata)
+        # client.publish("fisika/soal", mdata)
+        # print(self.entryColumn.get())
+        # client.loop_stop()
+        # print(self.questionNumber)
+        # self.questionNumber += 1
+        # self.question.set(str(self.questionNumber))
+        # self.entryColumn.delete(0, END)
 
     def openListnilai(self):
         close()
         os.system("python listnilai.py")
 
-    def exit():
-        sure = messagebox.askyesno(
-            "exit", "Apakah Yakin Ingin Keluar")
-        if sure == True:
-            root.destroy()
+
+def exit():
+    sure = messagebox.askyesno(
+        "exit", "Apakah Yakin Ingin Keluar")
+    if sure == True:
+        root.destroy()
 
 
 def close():

@@ -1,8 +1,10 @@
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import pymysql
 import os
+
 
 from pymysql.connections import DEFAULT_USER
 from pymysql.cursors import Cursor
@@ -15,7 +17,9 @@ cursor = db.cursor()
 #### MAIN WINDOW ###
 root = Tk()
 root.title("List Nilai")
-root.state('zoomed')
+root.geometry("800x500")
+root.resizable(0, 0)
+root.protocol("WM_DELETE_WINDOW", exit)
 
 
 wrapper1 = LabelFrame(root, text="List Nilai")
@@ -27,6 +31,16 @@ wrapper2.pack(fill="both", expand="yes", padx=20, pady=10)
 wrapper3.pack(fill="both", expand="yes", padx=20, pady=10)
 
 ###  WRAPPER 1 ###
+
+
+def callNilai():
+    os.system('python nilaisiswa.py')
+    close()
+    os.system('python listnilai.py')
+
+
+updateBtn = Button(wrapper1, text="Update Nilai", command=callNilai)
+updateBtn.pack(side=tk.LEFT)
 
 
 def update(rows):
@@ -45,9 +59,14 @@ trv.heading(2, text="Nama")
 trv.heading(3, text="Kelas")
 trv.heading(4, text="Nilai")
 
+with open("session_guru.txt", 'r') as file:
+    buka = file.read()
+    file.close()
 
-query = "SELECT nip, Nama, Kelas, Nilai from siswa"
-cursor.execute(query)
+
+query = "SELECT nip, Nama, Kelas, Nilai from siswa WHERE NIP = %s"
+record = buka
+cursor.execute(query, record)
 rows = cursor.fetchall()
 update(rows)
 
@@ -154,7 +173,15 @@ def clear_search():
 
 
 def close():
+
     root.destroy()
+
+
+def exit():
+    sure = messagebox.askyesno(
+        "exit", "Apakah Yakin Ingin Keluar")
+    if sure == True:
+        root.destroy()
 
 
 def callUploadSoal():
@@ -190,7 +217,7 @@ clear_btn.grid(row=4, column=3, padx=30, pady=3)
 btnUploadSoal = Button(wrapper3, text="Upload Soal Guru",
                        command=callUploadSoal,
                        width=20, bg="green", fg="white", font=("times", 11, "bold"))
-btnUploadSoal.place(x=700, y=97)
+btnUploadSoal.place(x=500, y=80)
 
 
 ### END ###

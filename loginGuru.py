@@ -12,6 +12,13 @@ def clear():
 def close():
     winlogin.withdraw()
 
+
+def exit():
+    sure = messagebox.askyesno(
+        "exit", "Apakah Yakin Ingin Keluar")
+    if sure == True:
+        winlogin.destroy()
+
 ##________________LOGIN___________________##
 
 
@@ -34,9 +41,10 @@ def login():
                     "Error", "NIP atau Password Salah", parent=winlogin)
             else:
                 messagebox.showinfo("Success", "Login Sukses", parent=winlogin)
-
+                createSession()
                 close()
                 uploadSoal()
+                # subscriber()
 
             con.close()
         except Exception as es:
@@ -44,16 +52,27 @@ def login():
                 "Error", f"Error Due to : {str(es)}", parent=winlogin)
 
 
+def createSession():
+    with open("session_guru.txt", "w") as file:
+        file.write(nip.get())
+        file.close()
+
+
 def uploadSoal():
     close()
     os.system('python upload.py')
+
+
+def subscriber():
+
+    os.system('pythonw subscribe.pyw')
 
 ###_______________________SIGNUP___________________##
 
 
 def signup():
     def action():
-        if nip.get() == "" or nama.get() == "" or kelas.get() == "" or password.get() == "" or verify_pass.get() == "":
+        if nip.get() == "" or nama.get() == "" or password.get() == "" or verify_pass.get() == "":
             messagebox.showerror(
                 "Error", "Semua Data Harus Terisi", parent=winsignup)
         elif password.get() != verify_pass.get():
@@ -70,12 +89,11 @@ def signup():
                     messagebox.showerror(
                         "Error", "User Sudah Terdaftar", parent=winsignup)
                 else:
-                    cur.execute("INSERT INTO siswa (nip, password, Nama, Kelas) VALUES(%s,%s,%s,%s)",
+                    cur.execute("INSERT INTO guru (nip, password, Nama) VALUES(%s,%s,%s)",
                                 (
                                     nip.get(),
                                     password.get(),
-                                    nama.get(),
-                                    kelas.get()
+                                    nama.get()
                                 )
                                 )
                     con.commit()
@@ -99,7 +117,6 @@ def signup():
         password.delete(0, END)
         verify_pass.delete(0, END)
         nama.delete(0, END)
-        kelas.delete(0, END)
 
     # Start Signup Window
     winsignup = Tk()
@@ -118,20 +135,16 @@ def signup():
     nama = Label(winsignup, text="Nama: ", font="Verdana 10 bold")
     nama.place(x=80, y=193)
 
-    kelas = Label(winsignup, text="Kelas", font="Verdana 10 bold")
-    kelas.place(x=80, y=253)
-
     password = Label(winsignup, text="Password :", font="Verdana 10 bold")
-    password.place(x=80, y=313)
+    password.place(x=80, y=253)
 
     verify_pass = Label(winsignup, text="Confirm Password :",
                         font="Verdana 10 bold")
-    verify_pass.place(x=80, y=373)
+    verify_pass.place(x=80, y=313)
 
     # Form data signup Entry box
     nip = StringVar()
     nama = StringVar()
-    kelas = StringVar()
     password = StringVar()
     verify_pass = StringVar()
 
@@ -141,14 +154,12 @@ def signup():
     nama = Entry(winsignup, width=30, textvariable=nama)
     nama.place(x=230, y=193)
 
-    kelas = Entry(winsignup, width=30, show="*", textvariable=kelas)
-    kelas.place(x=230, y=253)
-
     password = Entry(winsignup, width=30, show="*", textvariable=password)
-    password.place(x=230, y=313)
+    password.place(x=230, y=253)
 
     verify_pass = Entry(winsignup, width=30, show="*",
                         textvariable=verify_pass)
+    verify_pass.place(x=230, y=315)
 
     # Button Login and Clear
 
@@ -177,6 +188,7 @@ winlogin.title("E-Lorentz")
 winlogin.maxsize(width=500,  height=500)
 winlogin.minsize(width=500,  height=500)
 
+winlogin.protocol("WM_DELETE_WINDOW", exit)
 
 # heading label
 heading = Label(winlogin, text="Login Guru", font='Verdana 25 bold')

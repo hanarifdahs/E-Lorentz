@@ -34,14 +34,40 @@ def login():
                     "Error", "NIS atau Password Salah", parent=winLogin)
             else:
                 messagebox.showinfo("Success", "Login Sukses", parent=winLogin)
-                # createSession()
+                createSession()
                 close()
+                setjawaban()
                 openSoal()
                 # question()
             con.close()
         except Exception as es:
             messagebox.showerror(
                 "Error", f"Error Due to : {str(es)}", parent=winLogin)
+
+
+def setjawaban():
+    db = pymysql.connect(
+        host="localhost", user="root", password="", database="lorentz")
+    cur = db.cursor()
+    cur.execute("SELECT * FROM jawaban WHERE NIS=%s", nis.get())
+    row = cur.fetchone()
+    cur.execute("SELECT nomor FROM soal")
+    nomor = [i[0] for i in cur.fetchall()]
+    if row != None:
+        return 1
+    else:
+        for i in range(len(nomor)):
+            sql = """INSERT INTO jawaban (NIS, nomor) VALUES(%s, %s)"""
+            record = (nis.get(), nomor[i])
+            cur.execute(sql, record)
+        db.commit()
+        db.close()
+
+
+def createSession():
+    with open("session_nis.txt", "w") as file:
+        file.write(nis.get())
+        file.close()
 
 
 def openSoal():
@@ -68,9 +94,10 @@ def signup():
                     messagebox.showerror(
                         "Error", "User Sudah Terdaftar", parent=winSignup)
                 else:
-                    cur.execute("INSERT INTO siswa (NIS, password, Nama, Kelas) VALUES(%s,%s,%s,%s)",
+                    cur.execute("INSERT INTO siswa (NIS, NIP, password, Nama, Kelas) VALUES(%s,%s,%s,%s,%s)",
                                 (
                                     nis.get(),
+                                    guru.get(),
                                     password.get(),
                                     nama.get(),
                                     kelas.get()
@@ -108,25 +135,29 @@ def signup():
     heading = Label(winSignup, text="Signup", font="Verdana 20 bold")
     heading.place(x=80, y=60)
 
-    nis = Label(winSignup, text="NIS : ", font="Verdana 20 bold")
-    nis.place(x=80, y=60)
+    nis = Label(winSignup, text="NIS : ", font="Verdana 10 bold")
+    nis.place(x=80, y=133)
 
-    nama = Label(winSignup, text="Nama", font="Verdana 20 bold")
+    nama = Label(winSignup, text="Nama : ", font="Verdana 10 bold")
     nama.place(x=80, y=193)
 
-    kelas = Label(winSignup, text="Kelas", font="Verdana 20 bold")
+    kelas = Label(winSignup, text="Kelas : ", font="Verdana 10 bold")
     kelas.place(x=80, y=253)
 
-    password = Label(winSignup, text="Password", font="Verdana 20 bold")
-    password.place(x=80, y=313)
+    guru = Label(winSignup, text="NIP Guru : ", font="Verdana 10 bold")
+    guru.place(x=80, y=313)
 
-    verivyPass = Label(winSignup, text="Confirm Password :",
-                       font="Verdana 20 bold")
-    verivyPass.place(x=80, y=373)
+    password = Label(winSignup, text="Password : ", font="Verdana 10 bold")
+    password.place(x=80, y=373)
+
+    verivyPass = Label(winSignup, text="Confirm Password : ",
+                       font="Verdana 10 bold")
+    verivyPass.place(x=80, y=436)
 
     nis = StringVar()
     nama = StringVar()
     kelas = StringVar()
+    guru = StringVar()
     password = StringVar()
     verify_pass = StringVar()
 
@@ -136,24 +167,29 @@ def signup():
     nama = Entry(winSignup, width=30, textvariable=nama)
     nama.place(x=230, y=193)
 
-    kelas = Entry(winSignup, width=30, show="*", textvariable=kelas)
+    kelas = Entry(winSignup, width=30, textvariable=kelas)
     kelas.place(x=230, y=253)
 
+    guru = Entry(winSignup, width=30, textvariable=guru)
+    guru.place(x=230, y=313)
+
     password = Entry(winSignup, width=30, show="*", textvariable=password)
-    password.place(x=230, y=313)
+    password.place(x=230, y=375)
 
     verify_pass = Entry(winSignup, width=30, show="*",
                         textvariable=verify_pass)
+    verify_pass.place(x=230, y=436)
 
     btnSignup = Button(winSignup, text="Signup",
                        font="Verdana 10 bold", command=action)
-    btnSignup.place(x=200, y=413)
+    btnSignup.place(x=233, y=513)
 
-    btnLogin = Button(winSignup, text="Clear")
-    btnLogin.place(x=280, y=413)
+    btnClear = Button(winSignup, text="Clear",
+                      font="Verdana 10 bold", command=clear)
+    btnClear.place(x=333, y=513)
 
     btnBack = Button(winSignup, text="Kembali ke Login", command=switch)
-    btnBack.place(x=350, y=20)
+    btnBack.place(x=380, y=20)
 
     winSignup.mainloop()
 
@@ -190,9 +226,9 @@ btn_login = Button(winLogin, text="Login",
 btn_login.place(x=200, y=293)
 
 
-btn_login = Button(winLogin, text="Clear",
+btn_clear = Button(winLogin, text="Clear",
                    font='Verdana 10 bold', command=clear)
-btn_login.place(x=260, y=293)
+btn_clear.place(x=260, y=293)
 
 # signup button
 
