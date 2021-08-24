@@ -24,7 +24,7 @@ def totalNilai(hasil):
 def nilai(data):
     results = []
     for i in range(len(data)):
-        if math.floor(data[i][0]) == math.floor(data[i][1]):
+        if data[i][0] == data[i][1]:
             result = TRUE
         else:
             result = FALSE
@@ -40,6 +40,7 @@ for i in range(len(data)):
     temp = nilai(result)
     print(temp)
     total = totalNilai(temp)
+    print(total)
     s = """UPDATE siswa SET nilai = %s WHERE NIS = %s"""
     r = (total, data[i][0])
     cur.execute(s, r)

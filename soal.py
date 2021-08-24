@@ -25,15 +25,15 @@ class Quiz:
         judul = Label(self.root, text="Soal", width=50, bg="blue",
                       fg="white", font=("times", 20, "bold"))
         judul.place(x=0, y=2)
-        dik = Label(self.root, text="Hitung Gaya Lorentz dengan memasukkan Diketahui sesuai soal ke dalam E-Lorentz \n dengan menggunakan Keypad yang tersedia, # untuk enter dan * untuk backspace", width=80,
-                    fg="black", font=("times", 13, "bold"))
-        dik.place(x=2, y=70)
+        dik = Label(self.root, text="Hitung Gaya Lorentz dengan memasukkan Diketahui sesuai soal ke dalam E-Lorentz \n dengan menggunakan Keypad yang tersedia, # untuk enter \n Tulis jawabanmu sesuai informasi dari LCD dan jawab di Entry Box yang tersedia \n ps. Hitung sesuai Satuan Internasional (SI)", width=80,
+                    fg="black", font=("times", 12, "bold"))
+        dik.place(x=34, y=70)
         self.question.set(str(self.questionNumber)+". " +
                           self.soal[self.iter])
 
         questionIter = Label(self.root, textvariable=self.question, width=70,
                              font=("times", 12, "bold"), anchor="w")
-        questionIter.place(x=70, y=160)
+        questionIter.place(x=70, y=180)
         self.entryColumn = Entry(self.root, width=60,
                                  font=("times", 16, "bold"))
         self.entryColumn.place(x=70, y=260)

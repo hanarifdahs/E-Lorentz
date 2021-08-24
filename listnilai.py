@@ -54,7 +54,7 @@ trv = ttk.Treeview(wrapper1, columns=(1, 2, 3, 4),
 trv.pack()
 
 
-trv.heading(1, text="nip")
+trv.heading(1, text="nis")
 trv.heading(2, text="Nama")
 trv.heading(3, text="Kelas")
 trv.heading(4, text="Nilai")
@@ -64,7 +64,7 @@ with open("session_guru.txt", 'r') as file:
     file.close()
 
 
-query = "SELECT nip, Nama, Kelas, Nilai from siswa WHERE NIP = %s"
+query = "SELECT nis, Nama, Kelas, Nilai from siswa WHERE NIP = %s"
 record = buka
 cursor.execute(query, record)
 rows = cursor.fetchall()
